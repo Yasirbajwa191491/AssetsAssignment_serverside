@@ -6,7 +6,9 @@ const dotenv=require("dotenv");
 const cors=require("cors");
 const cookieParser=require("cookie-parser");
 const User=require("../Models/User")
-
+const USB = require("../Models/Usb");
+const CD = require("../Models/CD");
+const Internet = require("../Models/Internet");
 
 
 dotenv.config({path:'./config.env'});
@@ -38,7 +40,7 @@ router.post("/signup",async(req,res)=>{
                     expires: new Date(Date.now()+258920000000),
                     httpOnly:true,
                 })
-          return  res.status(201).send({message:'User Created',token:token,UserType:UserType});
+          return  res.status(201).send({message:'User Created',token:token,UserType:UserType,User_id:newprod._id});
             }else{
              return   res.status(201).send({error:'User not Created'});
 
@@ -74,7 +76,7 @@ router.post("/login",async(req,res)=>{
                 expires: new Date(Date.now()+258920000000),
                 httpOnly:true,
             })
-            return  res.status(200).send({message:'Login Success',token:token,UserType:check.UserType});
+            return  res.status(200).send({message:'Login Success',token:token,UserType:check.UserType,User_id:check._id});
         }else{
             return res.status(200).json({error: "invalid login details"})
         }
@@ -85,5 +87,74 @@ router.post("/login",async(req,res)=>{
         res.status(200).send(error) 
         
     }
+    })
+    router.post("/Usb_Submission",async(req,res)=>{
+        try {
+          const {StartingDate,EndDate,UserID}=req.body;
+          if(!StartingDate || !EndDate || !UserID){
+            res.status(200).send({error:"Please fill all required fields"})
+          } else{
+            const SubmissionDate=new Date().toJSON().slice(0, 10);
+            const newUsb=new USB({StartingDate,EndDate,SubmissionDate,UserID,ApprovalDate:null})
+            await newUsb.save();
+            res.status(200).send({message:"USB Submission Successfully"})
+          } 
+        } catch (error) {
+        res.status(200).send(error)  
+        }
+    })
+    router.post("/CD_Submission",async(req,res)=>{
+        try {
+          const {StartingDate,EndDate,UserID}=req.body;
+          if(!StartingDate || !EndDate || !UserID){
+            res.status(200).send({error:"Please fill all required fields"})
+          } else{
+            const SubmissionDate=new Date().toJSON().slice(0, 10);
+            const newCD=new CD({StartingDate,EndDate,SubmissionDate,UserID,ApprovalDate:null})
+            await newCD.save();
+            res.status(200).send({message:"USB Submission Successfully"})
+          } 
+        } catch (error) {
+        res.status(200).send(error)  
+        }
+    })
+    router.post("/Internet_Submission",async(req,res)=>{
+        try {
+          const {StartingDate,EndDate,UserID}=req.body;
+          if(!StartingDate || !EndDate || !UserID){
+            res.status(200).send({error:"Please fill all required fields"})
+          } else{
+            const SubmissionDate=new Date().toJSON().slice(0, 10);
+            const newInternet=new Internet({StartingDate,EndDate,SubmissionDate,UserID,ApprovalDate:null})
+            await newInternet.save();
+            res.status(200).send({message:"USB Submission Successfully"})
+          } 
+        } catch (error) {
+        res.status(200).send(error)  
+        }
+    })
+    router.get("/usbsubmission_list/:id",async(req,res)=>{
+        try {
+           const alldata=await USB.find({UserID:req.params.id}) 
+           res.status(200).send({data:alldata})
+        } catch (error) {
+        res.status(200).send(error)    
+        }
+    })
+    router.get("/cdsubmission_list/:id",async(req,res)=>{
+        try {
+           const alldata=await CD.find({UserID:req.params.id}) 
+           res.status(200).send({data:alldata})
+        } catch (error) {
+        res.status(200).send(error)    
+        }
+    })
+    router.get("/internetsubmission_list/:id",async(req,res)=>{
+        try {
+           const alldata=await Internet.find({UserID:req.params.id}) 
+           res.status(200).send({data:alldata})
+        } catch (error) {
+        res.status(200).send(error)    
+        }
     })
 module.exports=router;
