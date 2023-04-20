@@ -21,6 +21,9 @@ const productSchema=new Schema({
             message:"Please enter valid email"
         }
     },
+    Status:{
+        type:String,
+        },
     password:{
         type: String,
         min: [7,"password should countains atleast 7 characters"],
@@ -34,7 +37,6 @@ const productSchema=new Schema({
  },
  UserType:{
     type:String,
-    required:true,
  },
  tokens:[
     {

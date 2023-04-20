@@ -18,6 +18,10 @@ const InternetSchema=new Schema({
     ApproveBy:{
         type: mongoose.Schema.Types.ObjectId  
     },
+    Status:{
+        type:String,
+        required:true,
+        },
     Expired:{
         type:Boolean,
         default:false
