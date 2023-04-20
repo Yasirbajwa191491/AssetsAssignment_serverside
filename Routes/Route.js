@@ -244,19 +244,36 @@ router.post("/login",async(req,res)=>{
         res.status(200).send(error)    
         }
     })
+    router.get("/usbpending_list",async(req,res)=>{
+        try {
+           const alldata=await USB.find({Status:'Pending',Expired:false}) 
+           res.status(200).send({data:alldata})
+        } catch (error) {
+        res.status(200).send(error)    
+        }
+    })
     router.get("/usbdays_list/:id",async(req,res)=>{
         try {
            const alldata=await USB.findOne({UserID:req.params.id}) 
+           if(alldata.Expired){
+            res.status(200).send({days:'Request Expired'})
+           }else{
             const date1=new Date(alldata.StartingDate)
             const date2=new Date(alldata.EndDate)
             let difference=date2.getTime()-date1.getTime()
             res.status(200).send({days:Math.ceil(difference/(1000*3600*24))})
+           }
+        
         } catch (error) {
         res.status(200).send(error)    
         }
     })
     router.get("/usbapproval_list/:id",async(req,res)=>{
         try {
+          const check_security=await User.findOne({_id:req.params.id});
+          if(check_security.UserType==='User'){
+           return res.status(200).send({error:'You do not have access to see USB Approval History'})
+          }
            const alldata=await USB.find({ApproveBy:req.params.id}) 
            res.status(200).send({data:alldata})
         } catch (error) {
