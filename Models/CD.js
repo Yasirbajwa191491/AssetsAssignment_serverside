@@ -2,28 +2,38 @@ const {Schema,model}=require("mongoose");
 const mongoose=require("mongoose")
 const CDSchema=new Schema({
     StartingDate:{
-        type: Date,
+        type: String,
         required:true,
     },
     EndDate:{
-        type:Date,
+        type:String,
         required:true,
     },
     SubmissionDate:{
-        type:Date,  
+        type:String,  
     },
     ApprovalDate:{
-        type:Date,
+        type:String,
     },
     ApproveBy:{
-        type: mongoose.Schema.Types.ObjectId  
+        type: mongoose.Schema.Types.ObjectId, 
+        ref:'users' 
+    },
+    RejectedBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'users' 
     },
     Expired:{
         type:Boolean,
         default:false
     },
+    Status:{
+    type:String,
+    required:true,
+    },
     UserID:{
         type: mongoose.Schema.Types.ObjectId,
+        ref:'users'
     }
 })
 const CD=model("CD",CDSchema);
