@@ -2,14 +2,16 @@ const {Schema,model}=require("mongoose");
 const bcrypt=require("bcryptjs")
 const validatornpm=require("validator");
 const productSchema=new Schema({
-    name:{
+    
+    fname:{
         type: String,
         required: true,
     },
-    username:{
+    lname:{
         type: String,
         required: true,
     },
+
     email:{
         type: String,
         required: true,

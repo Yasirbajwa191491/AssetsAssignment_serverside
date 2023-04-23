@@ -53,8 +53,8 @@ const expireHandler=async()=>{
 // Registration Route
 router.post("/signup",async(req,res)=>{
     try {
-        const {name,username,email,password,cpassword,UserType}=req.body;
-        if(!name || !username || !email || !password || !cpassword || !UserType){
+        const {fname,lname,email,password,cpassword,UserType}=req.body;
+        if(!fname || !lname || !email || !password || !cpassword || !UserType){
     return  res.status(200).send({error:"Please fill all required property"})
         }
         const checkemail=await User.findOne({email:email});
@@ -62,7 +62,7 @@ router.post("/signup",async(req,res)=>{
        res.status(200).send({error:"Email already exist"}); 
         }else{
             if(password ===cpassword){
-            const newuser=new User({name,username,email,password,cpassword,UserType});
+            const newuser=new User({fname,lname,email,password,cpassword,UserType});
             const newprod=await newuser.save();
             if(newprod){
                 const token=await jwt.sign({_id:newprod._id},process.env.SECRET_KEY);
