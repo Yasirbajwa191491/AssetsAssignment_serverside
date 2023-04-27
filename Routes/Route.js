@@ -419,13 +419,9 @@ router.post("/login",async(req,res)=>{
         res.status(200).send(error)    
         }
     })
-    router.get("/usbapproval_list/:id",async(req,res)=>{
+    router.get("/usbapproval_list",async(req,res)=>{
         try {
-          const check_security=await User.findOne({_id:req.params.id});
-          if(check_security.UserType==='User'){
-           return res.status(200).send({error:'You do not have access to see USB Approval History'})
-          }
-           const alldata=await USB.find({ApproveBy:req.params.id}) 
+           const alldata=await USB.find({}) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -439,12 +435,9 @@ router.post("/login",async(req,res)=>{
         res.status(200).send(error)    
         }
     })
-    router.get("/cdapproval_list/:id",async(req,res)=>{
+    router.get("/cdapproval_list",async(req,res)=>{
       try {
-        const check_security=await User.findOne({_id:req.params.id});
-        if(check_security.UserType==='User'){
-         return res.status(200).send({error:'You do not have access to see CD Approval History'})
-        }
+       
          const alldata=await CD.find({ApproveBy:req.params.id}) 
          res.status(200).send({data:alldata})
       } catch (error) {
@@ -459,13 +452,10 @@ router.post("/login",async(req,res)=>{
         res.status(200).send(error)    
         }
     })
-    router.get("/internetapproval_list/:id",async(req,res)=>{
+    router.get("/internetapproval_list",async(req,res)=>{
       try {
-        const check_security=await User.findOne({_id:req.params.id});
-        if(check_security.UserType==='User'){
-         return res.status(200).send({error:'You do not have access to see Internet Approval History'})
-        }
-         const alldata=await Internet.find({ApproveBy:req.params.id}) 
+        
+         const alldata=await Internet.find({}) 
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
