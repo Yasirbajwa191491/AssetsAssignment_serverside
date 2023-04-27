@@ -327,9 +327,9 @@ router.post("/login",async(req,res)=>{
      res.status(200).send(error)   
      }
     })
-    router.get("/usbsubmission_list",async(req,res)=>{
+    router.get("/usbsubmission_list/:id",async(req,res)=>{
         try {
-           const alldata=await USB.find({}) 
+           const alldata=await USB.find({UserID:req.params.id}) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -421,15 +421,15 @@ router.post("/login",async(req,res)=>{
     })
     router.get("/usbapproval_list",async(req,res)=>{
         try {
-           const alldata=await USB.find({}) 
+           const alldata=await USB.find({Status:'Approved'}) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
         }
     })
-    router.get("/cdsubmission_list",async(req,res)=>{
+    router.get("/cdsubmission_list/:id",async(req,res)=>{
         try {
-           const alldata=await CD.find({}) 
+           const alldata=await CD.find({UserID:req.params.id}) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -438,15 +438,15 @@ router.post("/login",async(req,res)=>{
     router.get("/cdapproval_list",async(req,res)=>{
       try {
        
-         const alldata=await CD.find({ApproveBy:req.params.id}) 
+         const alldata=await CD.find({Status:'Approved'}) 
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
       }
     })
-    router.get("/internetsubmission_list",async(req,res)=>{
+    router.get("/internetsubmission_list/:id",async(req,res)=>{
         try {
-           const alldata=await Internet.find({}) 
+           const alldata=await Internet.find({UserID:req.params.id}) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -455,10 +455,38 @@ router.post("/login",async(req,res)=>{
     router.get("/internetapproval_list",async(req,res)=>{
       try {
         
-         const alldata=await Internet.find({}) 
+         const alldata=await Internet.find({Status:'Approved'}) 
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
       }
     })
+    router.get("/usbrejected_list",async(req,res)=>{
+      try {
+        
+         const alldata=await USB.find({Status:'Rejected'}) 
+         res.status(200).send({data:alldata})
+      } catch (error) {
+      res.status(200).send(error)    
+      }
+    })
+    router.get("/cdrejected_list",async(req,res)=>{
+      try {
+        
+         const alldata=await CD.find({Status:'Rejected'}) 
+         res.status(200).send({data:alldata})
+      } catch (error) {
+      res.status(200).send(error)    
+      }
+    })
+    router.get("/internetrejected_list",async(req,res)=>{
+      try {
+        
+         const alldata=await Internet.find({Status:'Rejected'}) 
+         res.status(200).send({data:alldata})
+      } catch (error) {
+      res.status(200).send(error)    
+      }
+    })
+    
 module.exports=router;
