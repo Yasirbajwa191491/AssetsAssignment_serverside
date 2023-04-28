@@ -327,14 +327,7 @@ router.post("/login",async(req,res)=>{
      res.status(200).send(error)   
      }
     })
-    router.get("/usbsubmission_list/:id",async(req,res)=>{
-        try {
-           const alldata=await USB.find({UserID:req.params.id}) 
-           res.status(200).send({data:alldata})
-        } catch (error) {
-        res.status(200).send(error)    
-        }
-    })
+   
     router.get("/usbpending_list",async(req,res)=>{
         try {
            const alldata=await USB.find({Status:'Pending',Expired:false}) 
@@ -427,6 +420,14 @@ router.post("/login",async(req,res)=>{
         res.status(200).send(error)    
         }
     })
+    router.get("/usbsubmission_list/:id",async(req,res)=>{
+      try {
+         const alldata=await USB.find({UserID:req.params.id}) 
+         res.status(200).send({data:alldata})
+      } catch (error) {
+      res.status(200).send(error)    
+      }
+  })
     router.get("/cdsubmission_list/:id",async(req,res)=>{
         try {
            const alldata=await CD.find({UserID:req.params.id}) 
