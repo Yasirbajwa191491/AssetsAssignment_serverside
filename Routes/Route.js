@@ -9,7 +9,7 @@ const User=require("../Models/User")
 const USB = require("../Models/Usb");
 const CD = require("../Models/CD");
 const Internet = require("../Models/Internet");
-
+const { isEmpty } = require('validator');
 
 dotenv.config({path:'./config.env'});
 router.use(cors({credentials: true, origin: 'http://localhost:3000'}));
@@ -110,7 +110,7 @@ router.post("/login",async(req,res)=>{
                   expires: new Date(Date.now()+258920000000),
                   httpOnly:true,
               })
-              return  res.status(200).send({message:'Login Success',token:token,UserType:check.UserType,User_id:check._id});
+              return  res.status(200).send({message:'Login Success',token:token,UserType:check.UserType,User_id:check._id,name:check.fname+" "+check.lname});
             }else{
               return res.status(200).json({error: "invalid login details"})
           }
@@ -141,7 +141,7 @@ router.post("/login",async(req,res)=>{
                   expires: new Date(Date.now()+258920000000),
                   httpOnly:true,
               })
-              return  res.status(200).send({message:'Login Success',token:token,UserType:newprod.UserType,User_id:newprod._id});
+              return  res.status(200).send({message:'Login Success',token:token,UserType:newprod.UserType,User_id:newprod._id,name:newprod.fname+" "+newprod.lname});
            
             }
             }
@@ -330,7 +330,24 @@ router.post("/login",async(req,res)=>{
    
     router.get("/usbpending_list",async(req,res)=>{
         try {
-           const alldata=await USB.find({Status:'Pending',Expired:false}) 
+          const alldata=await USB.aggregate([
+            {
+              $match:
+                {
+                  "Status": "Pending"
+                }
+            },
+            {
+              $lookup:
+                {
+                  from: "users",
+                  localField: "UserID",
+                  foreignField: "_id",
+                  as: "userdata"
+                }
+            }
+            
+          ]) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -338,7 +355,24 @@ router.post("/login",async(req,res)=>{
     })
     router.get("/cdpending_list",async(req,res)=>{
         try {
-           const alldata=await CD.find({Status:'Pending',Expired:false}) 
+          const alldata=await CD.aggregate([
+            {
+              $match:
+                {
+                  "Status": "Pending"
+                }
+            },
+            {
+              $lookup:
+                {
+                  from: "users",
+                  localField: "UserID",
+                  foreignField: "_id",
+                  as: "userdata"
+                }
+            }
+            
+          ])
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -346,7 +380,24 @@ router.post("/login",async(req,res)=>{
     })
     router.get("/internetpending_list",async(req,res)=>{
         try {
-           const alldata=await Internet.find({Status:'Pending',Expired:false}) 
+          const alldata=await Internet.aggregate([
+            {
+              $match:
+                {
+                  "Status": "Pending"
+                }
+            },
+            {
+              $lookup:
+                {
+                  from: "users",
+                  localField: "UserID",
+                  foreignField: "_id",
+                  as: "userdata"
+                }
+            }
+            
+          ])
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -360,6 +411,9 @@ router.post("/login",async(req,res)=>{
            }
            else if(alldata.Status==='Pending'){
             res.status(200).send({days:'Request Pending'})
+           }
+           else if(alldata.Status==='Rejected'){
+            res.status(200).send({days:'Request Rejected'})
            }
            else{
             const date1=new Date(alldata.StartingDate)
@@ -380,6 +434,8 @@ router.post("/login",async(req,res)=>{
            }
            else if(alldata.Status==='Pending'){
             res.status(200).send({days:'Request Pending'})
+           } else if(alldata.Status==='Rejected'){
+            res.status(200).send({days:'Request Rejected'})
            }
            else{
             const date1=new Date(alldata.StartingDate)
@@ -401,6 +457,9 @@ router.post("/login",async(req,res)=>{
            else if(alldata.Status==='Pending'){
             res.status(200).send({days:'Request Pending'})
            }
+           else if(alldata.Status==='Rejected'){
+            res.status(200).send({days:'Request Rejected'})
+           }
            else{
             const date1=new Date(alldata.StartingDate)
             const date2=new Date(alldata.EndDate)
@@ -414,7 +473,24 @@ router.post("/login",async(req,res)=>{
     })
     router.get("/usbapproval_list",async(req,res)=>{
         try {
-           const alldata=await USB.find({Status:'Approved'}) 
+          const alldata=await USB.aggregate([
+            {
+              $match:
+                {
+                  "Status": "Approved"
+                }
+            },
+            {
+              $lookup:
+                {
+                  from: "users",
+                  localField: "UserID",
+                  foreignField: "_id",
+                  as: "userdata"
+                }
+            }
+            
+          ]) 
            res.status(200).send({data:alldata})
         } catch (error) {
         res.status(200).send(error)    
@@ -439,7 +515,24 @@ router.post("/login",async(req,res)=>{
     router.get("/cdapproval_list",async(req,res)=>{
       try {
        
-         const alldata=await CD.find({Status:'Approved'}) 
+        const alldata=await CD.aggregate([
+          {
+            $match:
+              {
+                "Status": "Approved"
+              }
+          },
+          {
+            $lookup:
+              {
+                from: "users",
+                localField: "UserID",
+                foreignField: "_id",
+                as: "userdata"
+              }
+          }
+          
+        ])
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
@@ -456,7 +549,24 @@ router.post("/login",async(req,res)=>{
     router.get("/internetapproval_list",async(req,res)=>{
       try {
         
-         const alldata=await Internet.find({Status:'Approved'}) 
+        const alldata=await Internet.aggregate([
+          {
+            $match:
+              {
+                "Status": "Approved"
+              }
+          },
+          {
+            $lookup:
+              {
+                from: "users",
+                localField: "UserID",
+                foreignField: "_id",
+                as: "userdata"
+              }
+          }
+          
+        ])
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
@@ -465,7 +575,24 @@ router.post("/login",async(req,res)=>{
     router.get("/usbrejected_list",async(req,res)=>{
       try {
         
-         const alldata=await USB.find({Status:'Rejected'}) 
+        const alldata=await USB.aggregate([
+          {
+            $match:
+              {
+                "Status": "Rejected"
+              }
+          },
+          {
+            $lookup:
+              {
+                from: "users",
+                localField: "UserID",
+                foreignField: "_id",
+                as: "userdata"
+              }
+          }
+          
+        ])
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
@@ -474,7 +601,24 @@ router.post("/login",async(req,res)=>{
     router.get("/cdrejected_list",async(req,res)=>{
       try {
         
-         const alldata=await CD.find({Status:'Rejected'}) 
+        const alldata=await CD.aggregate([
+          {
+            $match:
+              {
+                "Status": "Rejected"
+              }
+          },
+          {
+            $lookup:
+              {
+                from: "users",
+                localField: "UserID",
+                foreignField: "_id",
+                as: "userdata"
+              }
+          }
+          
+        ])
          res.status(200).send({data:alldata})
       } catch (error) {
       res.status(200).send(error)    
@@ -483,11 +627,105 @@ router.post("/login",async(req,res)=>{
     router.get("/internetrejected_list",async(req,res)=>{
       try {
         
-         const alldata=await Internet.find({Status:'Rejected'}) 
+         const alldata=await Internet.aggregate([
+          {
+            $match:
+              {
+                "Status": "Rejected"
+              }
+          },
+          {
+            $lookup:
+              {
+                from: "users",
+                localField: "UserID",
+                foreignField: "_id",
+                as: "userdata"
+              }
+          }
+          
+        ])
          res.status(200).send({data:alldata})
+         
       } catch (error) {
       res.status(200).send(error)    
       }
     })
-    
+  router.get('/users',async(req,res)=>{
+    try {
+      const data=await User.find({UserType:'User'}).select("-tokens")
+      res.status(200).send({data})
+    } catch (error) {
+      console.log(error);
+    }
+  })  
+  router.get('/user/:id',async(req,res)=>{
+    try {
+      const data=await User.findOne({UserType:'User',_id:req.params.id}).select("-tokens")
+      res.status(200).send({data})
+    } catch (error) {
+      console.log(error);
+    }
+  })  
+  router.delete('/user/:id',async(req,res)=>{
+    try {
+      const data=await User.findOneAndDelete({UserType:'User',_id:req.params.id})
+      if(data){
+        res.status(200).send({message:'User Deleted'})
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+  })  
+  router.patch('/user/:id',async(req,res)=>{
+    try {
+      const {fname,lname,email}=req.body;
+      const data=await User.findOneAndUpdate(
+        {UserType:'User',_id:req.params.id},
+        { $set:{fname,lname,email}},{new:true}
+        )
+      
+      if(data){
+        res.status(200).send({message:'User Updated',data})
+      }
+      
+    } catch (error) {
+      console.log(error);
+    }
+  })  
+ router.patch('/change_password',async(req,res)=>{
+  try {
+    const {id,oldpassword,password,cpassword}=req.body;
+    const check=await User.findOne({_id:id})
+    if(check){
+ const security=await bcrypt.compare(oldpassword,check.password);
+ if(!security){
+  return res.status(200).send({error:'Old Password is not matching'})
+ }else{
+  if(password !==cpassword){
+    res.status(200).send({error:'Password and Confirm Password are not matching'})
+  }else{
+    const pass=await bcrypt.hash(password,12);
+    const pass1=await bcrypt.hash(cpassword,12);
+    const data=await User.findOneAndUpdate(
+      {_id:id},
+      { $set:{password:pass,cpassword:pass1}},{new:true}
+      )
+    if(data){
+      res.status(200).send({message:'Password Updated',data})
+    }else{
+      res.status(200).send({message:'Password Not Updated',data})
+  
+    }
+  }
+  
+ }
+    }else{
+      res.status(200).send({error:'User not Exit'})
+    }
+  } catch (error) {
+    console.log(error);
+  }
+ })
 module.exports=router;
