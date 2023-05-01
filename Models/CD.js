@@ -15,14 +15,6 @@ const CDSchema=new Schema({
     ApprovalDate:{
         type:String,
     },
-    ApproveBy:{
-        type: mongoose.Schema.Types.ObjectId, 
-        ref:'users' 
-    },
-    RejectedBy:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:'users' 
-    },
     Expired:{
         type:Boolean,
         default:false
@@ -34,7 +26,15 @@ const CDSchema=new Schema({
     UserID:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'users'
-    }
+    },
+    ApproveBy:{
+        type: mongoose.Schema.Types.ObjectId, 
+        ref:'users' 
+    },
+    RejectedBy:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref:'users' 
+    },
 })
 const CD=model("CD",CDSchema);
 module.exports=CD;

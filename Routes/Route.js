@@ -9,7 +9,8 @@ const User=require("../Models/User")
 const USB = require("../Models/Usb");
 const CD = require("../Models/CD");
 const Internet = require("../Models/Internet");
-const { isEmpty } = require('validator');
+const Types = require('mongoose').Types
+
 
 dotenv.config({path:'./config.env'});
 router.use(cors({credentials: true, origin: 'http://localhost:3000'}));
@@ -155,8 +156,7 @@ router.post("/login",async(req,res)=>{
   return res.status(200).json({error: "invalid login details"})
  }
     } catch (error) {
-        res.status(200).send(error) 
-        
+        res.status(200).send(error)     
     }
     })
     router.post("/Usb_Submission",async(req,res)=>{
@@ -252,18 +252,20 @@ router.post("/login",async(req,res)=>{
     router.patch("/usb/approval",async(req,res)=>{
         try {
            const {_id,User_id,Status}=req.body;
+           let id =new Types.ObjectId(User_id)
            const ApprovalDate=new Date().toJSON().slice(0, 10);
            const check_security=await User.findOne({_id:User_id});
            if(check_security.UserType==='User'){
             return res.status(200).send({error:'You do not have access to Approve USB Submission'})
            }else{
+            
             if(Status==='Approved'){
-              const usbUpdate= await USB.updateOne({_id},[{$set:{ApproveBy:User_id,ApprovalDate:ApprovalDate,Status}}])
+              const usbUpdate= await USB.updateOne({_id},[{$set:{ApproveBy:id,ApprovalDate:ApprovalDate,Status}}])
               if(usbUpdate){
                 res.status(200).send({message:"USB Approved"});
               }
             }else{
-              const usbUpdate= await USB.updateOne({_id},[{$set:{RejectedBy:User_id,Status}}])
+              const usbUpdate= await USB.updateOne({_id},[{$set:{RejectedBy:id,Status}}])
               if(usbUpdate){
                 res.status(200).send({message:"USB Rejected"});
               }
@@ -278,18 +280,19 @@ router.post("/login",async(req,res)=>{
     router.patch("/cd/approval",async(req,res)=>{
       try {
         const {_id,User_id,Status}=req.body;
+        let id =new Types.ObjectId(User_id)
         const ApprovalDate=new Date().toJSON().slice(0, 10);
         const check_security=await User.findOne({_id:User_id});
         if(check_security.UserType==='User'){
          return res.status(200).send({error:'You do not have access to Approve CD Submission'})
         }else{
          if(Status==='Approved'){
-           const CDUpdate= await CD.updateOne({_id},[{$set:{ApproveBy:User_id,ApprovalDate:ApprovalDate,Status}}])
+           const CDUpdate= await CD.updateOne({_id},[{$set:{ApproveBy:id,ApprovalDate:ApprovalDate,Status}}])
            if(CDUpdate){
              res.status(200).send({message:"CD Approved"});
            }
          }else{
-           const CDUpdate= await CD.updateOne({_id},[{$set:{RejectedBy:User_id,Status}}])
+           const CDUpdate= await CD.updateOne({_id},[{$set:{RejectedBy:id,Status}}])
            if(CDUpdate){
              res.status(200).send({message:"CD Rejected"});
            }
@@ -304,18 +307,19 @@ router.post("/login",async(req,res)=>{
     router.patch("/internet/approval",async(req,res)=>{
       try {
         const {_id,User_id,Status}=req.body;
+        let id =new Types.ObjectId(User_id)
         const ApprovalDate=new Date().toJSON().slice(0, 10);
         const check_security=await User.findOne({_id:User_id});
         if(check_security.UserType==='User'){
          return res.status(200).send({error:'You do not have access to Approve Internet Submission'})
         }else{
          if(Status==='Approved'){
-           const InternetUpdate= await Internet.updateOne({_id},[{$set:{ApproveBy:User_id,ApprovalDate:ApprovalDate,Status}}])
+           const InternetUpdate= await Internet.findOneAndUpdate({_id},[{$set:{ApproveBy:id,ApprovalDate:ApprovalDate,Status}}])
            if(InternetUpdate){
-             res.status(200).send({message:"Internet Approved"});
+             res.status(200).send({message:"Internet Approved",data:InternetUpdate});
            }
          }else{
-           const InternetUpdate= await Internet.updateOne({_id},[{$set:{RejectedBy:User_id,Status}}])
+           const InternetUpdate= await Internet.findOneAndUpdate({_id},[{$set:{RejectedBy:id,Status}}])
            if(InternetUpdate){
              res.status(200).send({message:"Internet Rejected"});
            }
@@ -484,7 +488,7 @@ router.post("/login",async(req,res)=>{
               $lookup:
                 {
                   from: "users",
-                  localField: "UserID",
+                  localField: "ApproveBy",
                   foreignField: "_id",
                   as: "userdata"
                 }
@@ -526,7 +530,7 @@ router.post("/login",async(req,res)=>{
             $lookup:
               {
                 from: "users",
-                localField: "UserID",
+                localField: "ApproveBy",
                 foreignField: "_id",
                 as: "userdata"
               }
@@ -560,7 +564,7 @@ router.post("/login",async(req,res)=>{
             $lookup:
               {
                 from: "users",
-                localField: "UserID",
+                localField: "ApproveBy",
                 foreignField: "_id",
                 as: "userdata"
               }
@@ -586,7 +590,7 @@ router.post("/login",async(req,res)=>{
             $lookup:
               {
                 from: "users",
-                localField: "UserID",
+                localField: "RejectedBy",
                 foreignField: "_id",
                 as: "userdata"
               }
@@ -612,7 +616,7 @@ router.post("/login",async(req,res)=>{
             $lookup:
               {
                 from: "users",
-                localField: "UserID",
+                localField: "RejectedBy",
                 foreignField: "_id",
                 as: "userdata"
               }
@@ -638,7 +642,7 @@ router.post("/login",async(req,res)=>{
             $lookup:
               {
                 from: "users",
-                localField: "UserID",
+                localField: "RejectedBy",
                 foreignField: "_id",
                 as: "userdata"
               }
@@ -683,9 +687,7 @@ router.post("/login",async(req,res)=>{
       const {fname,lname,email}=req.body;
       const data=await User.findOneAndUpdate(
         {UserType:'User',_id:req.params.id},
-        { $set:{fname,lname,email}},{new:true}
-        )
-      
+        { $set:{fname,lname,email}},{new:true}) 
       if(data){
         res.status(200).send({message:'User Updated',data})
       }
