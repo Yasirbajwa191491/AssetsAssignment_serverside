@@ -23,6 +23,9 @@ const CDSchema=new Schema({
     type:String,
     required:true,
     },
+    photo:{
+   type: String,
+    },
     UserID:{
         type: mongoose.Schema.Types.ObjectId,
         ref:'users'

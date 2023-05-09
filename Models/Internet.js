@@ -27,6 +27,9 @@ const InternetSchema=new Schema({
         type:Boolean,
         default:false
     },
+    photo:{
+        type: String,
+         },
     Status:{
     type:String,
     required:true,

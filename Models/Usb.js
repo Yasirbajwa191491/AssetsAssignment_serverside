@@ -27,6 +27,9 @@ const UsbSchema=new Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref:'users'
     },
+    photo:{
+        type: String,
+         },
     ApproveBy:{
         type: mongoose.Schema.Types.ObjectId, 
         ref:'users' 
